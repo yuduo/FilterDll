@@ -5,6 +5,14 @@
 //#include "opencv2/imgcodecs.hpp"
 #include "opencv2/highgui.hpp"
 #include "opencv2/imgproc.hpp"
+
+#include "dcmtk/config/osconfig.h"
+#include "dcmtk/dcmdata/dctk.h"
+#include "dcmtk/dcmimgle/dcmimage.h"
+#include "dcmtk/dcmjpeg/djdecode.h"
+#include "dcmtk/dcmdata/dcrledrg.h"
+#include "dcmtk/dcmimage/diregist.h"
+
 #include <objidl.h>
 #include <windows.h>
 using namespace std;
@@ -12,7 +20,9 @@ using namespace std;
 using namespace Gdiplus;
 using namespace cv;
 #pragma comment (lib,"Gdiplus.lib")
-
+#pragma comment(lib, "Netapi32.lib")
+#pragma comment(lib, "ws2_32.lib")
+#pragma comment(lib, "Iphlpapi.lib")
 #define MATHLIBRARY_EXPORTS
 #ifdef MATHLIBRARY_EXPORTS  
 #define MATHLIBRARY_API __declspec(dllexport)   
@@ -29,7 +39,8 @@ namespace FilterLibrary
 		
 	public:
 		// read file
-		MATHLIBRARY_API Bitmap* ReadFile(std::string fileName);
+		MATHLIBRARY_API Bitmap* ReadFile(std::string fileName);//tif
+		MATHLIBRARY_API Bitmap* ReadDCMFile(std::string fileName);
 		MATHLIBRARY_API Bitmap* ConvertToBitMap(cv::Mat & i_Mat);
 		cv::Mat m_mat;
 
@@ -52,5 +63,9 @@ namespace FilterLibrary
 		MATHLIBRARY_API Bitmap* ToGamma(int gamma);//0~200
 		MATHLIBRARY_API Bitmap* ToOpening(int kernel);//0~20
 		MATHLIBRARY_API Bitmap* ToClosing(int kernel);//0~20
+
+		int Img_bitCount;
+		DicomImage* LoadDcmDataSet(std::string file_path);
+		std::vector<cv::Mat> GetImageFromDcmDataSet(DicomImage* m_dcmImage);
 	};
 }
